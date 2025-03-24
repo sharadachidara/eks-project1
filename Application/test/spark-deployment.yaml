@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spark-worker
+  template:
+    metadata:
+      labels:
+        app: spark-worker
+    spec:
+      containers:
+      - name: spark-worker
+        image: bitnami/spark:latest
+        ports:
+        - containerPort: 7077
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: "spark-nodes"
+      autoscaling:
+        minReplicas: 2
+        maxReplicas: 10
+        targetCPUUtilizationPercentage: 80
